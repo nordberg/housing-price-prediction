@@ -36,11 +36,29 @@ class Booli:
 
         url_parts[4] = urlencode(query)
         r = requests.get(urlparse.urlunparse(url_parts))
-        sold_apartments = json.loads(r.content.decode('utf-8'))
-        pass
+        data = json.loads(r.content.decode('utf-8'))
+        sold_apartments = []
+        sold_price = []
+        features = ['livingArea', 'constructionYear', 'floor',
+            'listPrice', 'rent', 'rooms']
+        for apmnt in data['sold']:
+            a = {}
+            skip = False
+            for f in features:
+                if f not in apmnt.keys():
+                    skip = True
+                else:
+                    a[f] = apmnt[f]
+            if not skip:
+                sold_apartments.append(a)
+                sold_price.append(apmnt['soldPrice'])
+
+        print(sold_apartments)
+        print(sold_price)
+        return sold_apartments, sold_price
 
     def train(self, area):
-        sold_list = self.__get_sold__(area)
+        X, y = self.__get_sold__(area)
         pass
 
     def predict(self, house):
